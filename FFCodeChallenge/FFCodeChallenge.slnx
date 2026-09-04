@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="ffcodechallenge.client/ffcodechallenge.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="FFCodeChallenge.Server/FFCodeChallenge.Server.csproj" />
+</Solution>

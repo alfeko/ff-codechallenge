@@ -15,7 +15,7 @@ builder.Services.AddHttpClient<IForeFlightWeatherClient, ForeFlightWeatherClient
 {
     var options = sp.GetRequiredService<IOptions<ForeFlightOptions>>().Value;
     client.BaseAddress = new Uri(options.BaseUrl);
-    client.DefaultRequestHeaders.Add(ForeFlightWeatherClient.HeaderName, ForeFlightWeatherClient.HeaderValue);
+    client.DefaultRequestHeaders.Add(options.ApiKeyHeader, options.ApiKey);
 });
 
 var app = builder.Build();

@@ -13,9 +13,6 @@ namespace FFCodeChallenge.Server.Services
 
     public class ForeFlightWeatherClient : IForeFlightWeatherClient
     {
-        public const string HeaderName = "x-foreflight-odense";
-        public const string HeaderValue = "true";
-
         private static readonly JsonSerializerOptions SerializerOptions = new()
         {
             PropertyNameCaseInsensitive = true

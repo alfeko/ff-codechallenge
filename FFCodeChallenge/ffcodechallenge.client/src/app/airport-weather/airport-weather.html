@@ -13,8 +13,13 @@
     spellcheck="false"
     placeholder="EKOD"
   />
-  <button type="submit">Get weather</button>
+  <button type="submit" [disabled]="pending() !== null">Get weather</button>
 </form>
+
+<div class="loading" role="status" *ngIf="pending() as code">
+  <span class="spinner" aria-hidden="true"></span>
+  Fetching {{ code }}&hellip;
+</div>
 
 <p *ngIf="error()" class="error">{{ error() }}</p>
 
@@ -80,4 +85,65 @@
     </dl>
   </div>
   <p class="empty" *ngIf="w.runways.length === 0">No runway data available.</p>
+
+  <h3 class="section-title">Forecast</h3>
+
+  <ng-container *ngIf="w.forecast as f">
+    <p class="forecast-meta" *ngIf="f.validFrom || f.validTo">
+      Valid {{ zuluTime(f.validFrom) }} &ndash; {{ zuluTime(f.validTo) }}
+      <span class="alt" *ngIf="f.dateIssued">issued {{ zuluTime(f.dateIssued) }}</span>
+    </p>
+
+    <p class="raw-taf" *ngIf="f.text">{{ f.text }}</p>
+
+    <ol class="periods" *ngIf="f.periods.length > 0">
+      <li class="period" *ngFor="let p of f.periods">
+        <p class="period-head">
+          <span class="period-time">{{ periodRange(p) }}</span>
+          <span class="change">{{ changeLabel(p) }}</span>
+          <span [ngClass]="flightRulesClass(p)" *ngIf="p.flightRules">{{ p.flightRules }}</span>
+        </p>
+
+        <p class="period-line">
+          <span class="metric" *ngIf="p.wind as wind">
+            {{ wind.speedKts | number: '1.0-0' }} kt from
+            {{ wind.directionDegrees | number: '3.0-0' }}&deg;
+          </span>
+          <span class="metric absent" *ngIf="!p.wind">No wind forecast</span>
+
+          <span class="metric" *ngIf="p.visibility as vis">
+            {{ vis.distanceMeters | number: '1.0-0' }} m
+            <span class="alt">{{ vis.distanceSm | number: '1.1-1' }} sm</span>
+          </span>
+        </p>
+
+        <p class="period-line" *ngFor="let runway of p.runways">
+          <span class="metric">
+            RWY {{ runway.designator }}
+            {{ magnitude(runway.headwindKts) | number: '1.0-0' }} kt
+            {{ headwindLabel(runway) | lowercase }}
+          </span>
+          <span class="metric">
+            {{ magnitude(runway.crosswindKts) | number: '1.0-0' }} kt crosswind
+            <span class="alt">{{ crosswindSide(runway) }}</span>
+          </span>
+        </p>
+
+        <p class="period-secondary" *ngIf="p.weather.length > 0 || p.cloudLayers.length > 0">
+          <span class="wx" *ngFor="let item of p.weather">{{ item }}</span>
+          <span class="cloud" *ngFor="let layer of p.cloudLayers">
+            <span class="coverage-inline">{{ layer.coverage }}</span>
+            {{ layer.altitudeFt | number: '1.0-0' }} ft
+            <span class="coverage-inline" *ngIf="layer.type">{{ layer.type }}</span>
+            <span class="ceiling" *ngIf="layer.ceiling">ceiling</span>
+          </span>
+        </p>
+
+        <p class="period-raw" *ngIf="p.text">{{ p.text }}</p>
+      </li>
+    </ol>
+    <p class="empty" *ngIf="f.periods.length === 0">No forecast periods reported.</p>
+  </ng-container>
+
+  <p class="empty" *ngIf="!w.forecast">No forecast issued for this airport.</p>
 </section>

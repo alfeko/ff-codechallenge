@@ -39,21 +39,24 @@ namespace FFCodeChallenge.Server.Services
             var payload = await response.Content.ReadFromJsonAsync<ForeFlightWeatherResponse>(SerializerOptions, cancellationToken);
             var conditions = payload?.Report?.Conditions;
 
+            // Current conditions stay mandatory: temperature and pressure have no meaningful
+            // value without a METAR, so a forecast-only response is treated as "no report".
             if (conditions is null)
             {
                 return null;
             }
 
-            return MapToDto(icao, conditions);
+            return MapToDto(icao, conditions, payload?.Report?.Forecast);
         }
 
-        private static AirportWeatherDto MapToDto(string icao, ForeFlightConditions conditions)
+        private static AirportWeatherDto MapToDto(
+            string icao,
+            ForeFlightConditions conditions,
+            ForeFlightForecast? forecast)
         {
-            var wind = new WindDto
-            {
-                SpeedKts = conditions.Wind?.SpeedKts ?? 0,
-                DirectionDegrees = conditions.Wind?.Direction ?? 0
-            };
+            // Current conditions have always exposed a non-null wind and visibility, so keep
+            // coalescing to defaults here even though the shared mappers can return null.
+            var wind = MapWind(conditions.Wind) ?? new WindDto();
 
             return new AirportWeatherDto
             {
@@ -61,20 +64,85 @@ namespace FFCodeChallenge.Server.Services
                 TemperatureC = conditions.TempC,
                 PressureHg = conditions.PressureHg,
                 PressureHpa = conditions.PressureHpa,
-                Visibility = new VisibilityDto
-                {
-                    DistanceSm = conditions.Visibility?.DistanceSm ?? 0,
-                    DistanceMeters = conditions.Visibility?.DistanceMeter ?? 0
-                },
+                Visibility = MapVisibility(conditions.Visibility) ?? new VisibilityDto(),
                 Wind = wind,
                 Runways = MapRunways(wind),
-                CloudLayers = conditions.CloudLayers.Select(layer => new CloudLayerDto
-                {
-                    Coverage = layer.Coverage,
-                    AltitudeFt = layer.AltitudeFt,
-                    Ceiling = layer.Ceiling
-                }).ToList()
+                CloudLayers = MapCloudLayers(conditions.CloudLayers),
+                Forecast = MapForecast(forecast)
             };
+        }
+
+        private static ForecastDto? MapForecast(ForeFlightForecast? forecast)
+        {
+            if (forecast is null)
+            {
+                return null;
+            }
+
+            return new ForecastDto
+            {
+                Text = forecast.Text,
+                DateIssued = ForeFlightTimestamp.Parse(forecast.DateIssued),
+                ValidFrom = ForeFlightTimestamp.Parse(forecast.Period?.DateStart),
+                ValidTo = ForeFlightTimestamp.Parse(forecast.Period?.DateEnd),
+
+                // Source order is preserved deliberately: TEMPO and PROB groups are nested
+                // inside the surrounding period's time span rather than following it, so
+                // sorting by start time would scramble the TAF's meaning.
+                Periods = forecast.Conditions.Select(MapForecastPeriod).ToList()
+            };
+        }
+
+        private static ForecastPeriodDto MapForecastPeriod(ForeFlightForecastConditions period)
+        {
+            var wind = MapWind(period.Wind);
+
+            return new ForecastPeriodDto
+            {
+                Text = period.Text,
+                Change = period.Change,
+                FlightRules = period.FlightRules,
+                PeriodStart = ForeFlightTimestamp.Parse(period.Period?.DateStart),
+                PeriodEnd = ForeFlightTimestamp.Parse(period.Period?.DateEnd),
+                Visibility = MapVisibility(period.Visibility),
+                Wind = wind,
+                Runways = wind is null ? [] : MapRunways(wind),
+                CloudLayers = MapCloudLayers(period.CloudLayers),
+                Weather = [.. period.Weather]
+            };
+        }
+
+        private static WindDto? MapWind(ForeFlightWind? wind)
+        {
+            return wind is null
+                ? null
+                : new WindDto
+                {
+                    SpeedKts = wind.SpeedKts,
+                    DirectionDegrees = wind.Direction
+                };
+        }
+
+        private static VisibilityDto? MapVisibility(ForeFlightVisibility? visibility)
+        {
+            return visibility is null
+                ? null
+                : new VisibilityDto
+                {
+                    DistanceSm = visibility.DistanceSm,
+                    DistanceMeters = visibility.DistanceMeter
+                };
+        }
+
+        private static List<CloudLayerDto> MapCloudLayers(IEnumerable<ForeFlightCloudLayer> layers)
+        {
+            return layers.Select(layer => new CloudLayerDto
+            {
+                Coverage = layer.Coverage,
+                Type = layer.Type,
+                AltitudeFt = layer.AltitudeFt,
+                Ceiling = layer.Ceiling
+            }).ToList();
         }
 
         private static List<RunwayDto> MapRunways(WindDto wind)

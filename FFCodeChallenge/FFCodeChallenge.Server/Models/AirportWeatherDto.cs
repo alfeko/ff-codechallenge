@@ -1,6 +1,25 @@
 namespace FFCodeChallenge.Server.Models
 {
+    /// <summary>
+    /// The full report: current conditions plus forecast. Composed from the same
+    /// <see cref="MetarDto"/> and <see cref="TafDto"/> the dedicated endpoints return,
+    /// so each concept is defined exactly once.
+    /// </summary>
     public class AirportWeatherDto
+    {
+        public string Icao { get; set; } = string.Empty;
+
+        public MetarDto Metar { get; set; } = new();
+
+        /// <summary>Null when the airport publishes no TAF.</summary>
+        public TafDto? Taf { get; set; }
+    }
+
+    /// <summary>
+    /// Current observed conditions. Carries its own Icao because it is also served
+    /// standalone from /api/weather/{icao}/metar, where nothing else identifies it.
+    /// </summary>
+    public class MetarDto
     {
         public string Icao { get; set; } = string.Empty;
 
@@ -17,14 +36,16 @@ namespace FFCodeChallenge.Server.Models
         public List<RunwayDto> Runways { get; set; } = [];
 
         public List<CloudLayerDto> CloudLayers { get; set; } = [];
-
-        /// <summary>Null when the airport publishes no TAF.</summary>
-        public ForecastDto? Forecast { get; set; }
     }
 
-    public class ForecastDto
+    /// <summary>
+    /// The forecast. Also served standalone from /api/weather/{icao}/taf, hence its own Icao.
+    /// </summary>
+    public class TafDto
     {
-        /// <summary>Raw TAF string, provided for reference. Not rendered by the UI.</summary>
+        public string Icao { get; set; } = string.Empty;
+
+        /// <summary>Raw TAF string, provided for reference.</summary>
         public string? Text { get; set; }
 
         public DateTimeOffset? DateIssued { get; set; }
@@ -38,7 +59,7 @@ namespace FFCodeChallenge.Server.Models
 
     public class ForecastPeriodDto
     {
-        /// <summary>Raw TAF fragment for this group. Not rendered by the UI.</summary>
+        /// <summary>Raw TAF fragment for this group.</summary>
         public string? Text { get; set; }
 
         /// <summary>Change group ("Temporary", "40% probability"). Null on the prevailing period.</summary>

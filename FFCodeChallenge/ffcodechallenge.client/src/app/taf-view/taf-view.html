@@ -1,0 +1,6 @@
+<app-load-state [pending]="state.pending()" [error]="state.error()"></app-load-state>
+
+<section class="report" *ngIf="state.data() as taf">
+  <h2 class="ident">{{ taf.icao }}</h2>
+  <app-forecast [taf]="taf"></app-forecast>
+</section>

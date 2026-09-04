@@ -1,0 +1,11 @@
+<nav class="tabs" aria-label="Report view">
+  <!-- exact:true on the full view only, or it would stay active on the child routes. -->
+  <a
+    [routerLink]="['/weather', icao]"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+    >Full</a
+  >
+  <a [routerLink]="['/weather', icao, 'metar']" routerLinkActive="active">METAR</a>
+  <a [routerLink]="['/weather', icao, 'taf']" routerLinkActive="active">TAF</a>
+</nav>

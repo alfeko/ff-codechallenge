@@ -1,0 +1,16 @@
+<form class="search" (ngSubmit)="search()" novalidate>
+  <label class="visually-hidden" for="icao">ICAO code</label>
+  <input
+    id="icao"
+    type="text"
+    name="icaoCode"
+    [(ngModel)]="icaoCode"
+    maxlength="4"
+    autocomplete="off"
+    spellcheck="false"
+    placeholder="EKOD"
+  />
+  <button type="submit">Get weather</button>
+</form>
+
+<p class="error" *ngIf="error()">{{ error() }}</p>

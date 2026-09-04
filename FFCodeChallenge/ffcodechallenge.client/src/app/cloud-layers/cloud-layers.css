@@ -1,0 +1,60 @@
+.layers {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.layer {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-top: 1px solid var(--rule);
+}
+
+.layer:first-child {
+  border-top: none;
+  padding-top: 0.75rem;
+}
+
+.coverage {
+  font-family: var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.layer > .coverage:first-child {
+  min-width: 3.25rem;
+}
+
+.altitude {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.ceiling {
+  margin-left: auto;
+  color: var(--accent);
+  font-size: 0.8125rem;
+}
+
+/* Inside a forecast period the layers sit on one wrapping line, and pushing "ceiling"
+   to the far edge with margin-left:auto would strand it across the card. */
+.compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.85rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.compact .layer {
+  gap: 0.35rem;
+  padding: 0;
+  border-top: none;
+}
+
+.compact .ceiling {
+  margin-left: 0;
+  font-size: 0.75rem;
+}

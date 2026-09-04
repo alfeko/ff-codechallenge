@@ -15,9 +15,9 @@ namespace FFCodeChallenge.Server.Services
     {
         /// <summary>
         /// DELIBERATE artificial latency -- this is not a real network cost and is not a
-        /// bug. It exists so the effect of <see cref="CachedForeFlightWeatherClient"/> is
-        /// visible: the first lookup for an airport takes ~2s, the next returns instantly
-        /// because it never reaches this class. Delete this to make the API realistic.
+        /// bug. It exists so the effect of the five-minute output cache is visible: the
+        /// first lookup for an airport takes ~2s, the next is served by the cache
+        /// middleware and never reaches this class. Delete this to make the API realistic.
         /// </summary>
         private static readonly TimeSpan ArtificialDelay = TimeSpan.FromSeconds(2);
 
@@ -57,19 +57,21 @@ namespace FFCodeChallenge.Server.Services
                 return null;
             }
 
-            return MapToDto(icao, conditions, payload?.Report?.Forecast);
+            return new AirportWeatherDto
+            {
+                Icao = icao,
+                Metar = MapMetar(icao, conditions),
+                Taf = MapTaf(icao, payload?.Report?.Forecast)
+            };
         }
 
-        private static AirportWeatherDto MapToDto(
-            string icao,
-            ForeFlightConditions conditions,
-            ForeFlightForecast? forecast)
+        private static MetarDto MapMetar(string icao, ForeFlightConditions conditions)
         {
             // Current conditions have always exposed a non-null wind and visibility, so keep
             // coalescing to defaults here even though the shared mappers can return null.
             var wind = MapWind(conditions.Wind) ?? new WindDto();
 
-            return new AirportWeatherDto
+            return new MetarDto
             {
                 Icao = icao,
                 TemperatureC = conditions.TempC,
@@ -78,20 +80,20 @@ namespace FFCodeChallenge.Server.Services
                 Visibility = MapVisibility(conditions.Visibility) ?? new VisibilityDto(),
                 Wind = wind,
                 Runways = MapRunways(wind),
-                CloudLayers = MapCloudLayers(conditions.CloudLayers),
-                Forecast = MapForecast(forecast)
+                CloudLayers = MapCloudLayers(conditions.CloudLayers)
             };
         }
 
-        private static ForecastDto? MapForecast(ForeFlightForecast? forecast)
+        private static TafDto? MapTaf(string icao, ForeFlightForecast? forecast)
         {
             if (forecast is null)
             {
                 return null;
             }
 
-            return new ForecastDto
+            return new TafDto
             {
+                Icao = icao,
                 Text = forecast.Text,
                 DateIssued = ForeFlightTimestamp.Parse(forecast.DateIssued),
                 ValidFrom = ForeFlightTimestamp.Parse(forecast.Period?.DateStart),

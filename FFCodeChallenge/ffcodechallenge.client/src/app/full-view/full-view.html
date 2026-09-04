@@ -1,0 +1,11 @@
+<app-load-state [pending]="state.pending()" [error]="state.error()"></app-load-state>
+
+<section class="report" *ngIf="state.data() as weather">
+  <h2 class="ident">{{ weather.icao }}</h2>
+
+  <app-current-conditions [metar]="weather.metar"></app-current-conditions>
+
+  <h3 class="section-title">Forecast</h3>
+  <app-forecast *ngIf="weather.taf as taf" [taf]="taf"></app-forecast>
+  <p class="empty" *ngIf="!weather.taf">No forecast issued for this airport.</p>
+</section>

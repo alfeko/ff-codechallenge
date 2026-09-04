@@ -1,0 +1,38 @@
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 2rem;
+  color: var(--muted);
+}
+
+.spinner {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--rule);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* The global reduced-motion rule freezes animations, which would leave a static
+   ring conveying nothing. Drop the graphic and let the text carry the message. */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    display: none;
+  }
+}
+
+.error {
+  margin: 2rem 0 0;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--alert);
+  color: var(--alert);
+}

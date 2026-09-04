@@ -1,0 +1,6 @@
+<app-load-state [pending]="state.pending()" [error]="state.error()"></app-load-state>
+
+<section class="report" *ngIf="state.data() as metar">
+  <h2 class="ident">{{ metar.icao }}</h2>
+  <app-current-conditions [metar]="metar"></app-current-conditions>
+</section>

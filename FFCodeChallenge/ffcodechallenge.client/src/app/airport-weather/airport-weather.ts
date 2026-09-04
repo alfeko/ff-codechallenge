@@ -176,7 +176,9 @@ export class AirportWeather {
     const code = this.icaoCode.toUpperCase();
     this.pending.set(code);
 
-    this.http.get<AirportWeatherDto>('/api/weather/' + this.icaoCode).subscribe({
+    // Send the normalised code: the server caches per URL, so "ekod" and "EKOD" would
+    // otherwise occupy two separate cache entries for the same airport.
+    this.http.get<AirportWeatherDto>('/api/weather/' + code).subscribe({
       next: (result) => {
         this.pending.set(null);
         this.weather.set(result);

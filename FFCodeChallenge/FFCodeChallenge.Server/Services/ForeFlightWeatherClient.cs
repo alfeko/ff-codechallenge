@@ -13,6 +13,14 @@ namespace FFCodeChallenge.Server.Services
 
     public class ForeFlightWeatherClient : IForeFlightWeatherClient
     {
+        /// <summary>
+        /// DELIBERATE artificial latency -- this is not a real network cost and is not a
+        /// bug. It exists so the effect of <see cref="CachedForeFlightWeatherClient"/> is
+        /// visible: the first lookup for an airport takes ~2s, the next returns instantly
+        /// because it never reaches this class. Delete this to make the API realistic.
+        /// </summary>
+        private static readonly TimeSpan ArtificialDelay = TimeSpan.FromSeconds(2);
+
         private static readonly JsonSerializerOptions SerializerOptions = new()
         {
             PropertyNameCaseInsensitive = true
@@ -27,6 +35,9 @@ namespace FFCodeChallenge.Server.Services
 
         public async Task<AirportWeatherDto?> GetWeatherAsync(string icao, CancellationToken cancellationToken)
         {
+            // See ArtificialDelay: simulated slowness to demonstrate the cache.
+            await Task.Delay(ArtificialDelay, cancellationToken);
+
             using var response = await _httpClient.GetAsync(icao, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.NotFound)

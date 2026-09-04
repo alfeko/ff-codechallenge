@@ -3,5 +3,6 @@
     <Build />
     <Deploy />
   </Project>
+  <Project Path="FFCodeChallenge.Server.Tests/FFCodeChallenge.Server.Tests.csproj" />
   <Project Path="FFCodeChallenge.Server/FFCodeChallenge.Server.csproj" />
 </Solution>

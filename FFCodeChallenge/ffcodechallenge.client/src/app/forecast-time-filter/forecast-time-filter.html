@@ -1,0 +1,12 @@
+<div class="filter">
+  <label for="forecast-time">At time</label>
+  <input
+    id="forecast-time"
+    type="time"
+    [value]="time"
+    (change)="onTimeChange($any($event.target).value)"
+  />
+  <span class="unit">Z</span>
+  <span class="alt" *ngIf="range">within {{ range }}</span>
+  <button type="button" class="reset" *ngIf="time" (click)="showAll()">Show all</button>
+</div>

@@ -16,6 +16,10 @@ export class RunwayComponents {
    */
   private static readonly NEGLIGIBLE_KTS = 0.5;
 
+  /** Operational limits. Any tailwind at all is worth flagging on takeoff or landing. */
+  private static readonly CROSSWIND_LIMIT_KTS = 15;
+  private static readonly HEADWIND_LIMIT_KTS = 50;
+
   @Input({ required: true }) runways: RunwayDto[] = [];
 
   /** One-line rows for a forecast period, instead of labelled blocks. */
@@ -38,5 +42,38 @@ export class RunwayComponents {
     }
 
     return runway.crosswindKts > 0 ? 'from the right' : 'from the left';
+  }
+
+  /**
+   * Conditions worth flagging. Each is rendered as text as well as colour, so the
+   * warning never depends on colour alone.
+   */
+  warnings(runway: RunwayDto): string[] {
+    const flags: string[] = [];
+
+    // Any tailwind is a warning: it lengthens the takeoff roll and the landing distance.
+    // Guarded by the display threshold so a -1e-15 rounding artefact can't trip it.
+    if (runway.headwindKts < -RunwayComponents.NEGLIGIBLE_KTS) {
+      flags.push(`Tailwind ${this.round(Math.abs(runway.headwindKts))} kt`);
+    }
+
+    // Absolute: 20 kt from the left is as much of a problem as 20 kt from the right.
+    if (Math.abs(runway.crosswindKts) > RunwayComponents.CROSSWIND_LIMIT_KTS) {
+      flags.push(`Crosswind over ${RunwayComponents.CROSSWIND_LIMIT_KTS} kt`);
+    }
+
+    if (runway.headwindKts > RunwayComponents.HEADWIND_LIMIT_KTS) {
+      flags.push(`Headwind over ${RunwayComponents.HEADWIND_LIMIT_KTS} kt`);
+    }
+
+    return flags;
+  }
+
+  hasWarning(runway: RunwayDto): boolean {
+    return this.warnings(runway).length > 0;
+  }
+
+  private round(value: number): number {
+    return Math.round(value);
   }
 }

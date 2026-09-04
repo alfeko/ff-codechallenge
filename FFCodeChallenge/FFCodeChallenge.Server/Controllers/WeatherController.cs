@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using FFCodeChallenge.Server.Models;
 using FFCodeChallenge.Server.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace FFCodeChallenge.Server.Controllers
 {
@@ -19,6 +20,7 @@ namespace FFCodeChallenge.Server.Controllers
         }
 
         [HttpGet("{icaoCode}")]
+        [OutputCache(PolicyName = OutputCachePolicies.FiveMinutesCache)]
         public async Task<ActionResult<AirportWeatherDto>> Get(string icaoCode, CancellationToken cancellationToken)
         {
             if (!IcaoPattern.IsMatch(icaoCode))

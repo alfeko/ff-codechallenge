@@ -1,0 +1,61 @@
+<h1>Airport weather</h1>
+<p class="intro">Enter a 4-letter ICAO code to see the latest reported conditions.</p>
+
+<form class="search" (ngSubmit)="getWeather()" novalidate>
+  <label class="visually-hidden" for="icao">ICAO code</label>
+  <input
+    id="icao"
+    type="text"
+    name="icaoCode"
+    [(ngModel)]="icaoCode"
+    maxlength="4"
+    autocomplete="off"
+    spellcheck="false"
+    placeholder="EKOD"
+  />
+  <button type="submit">Get weather</button>
+</form>
+
+<p *ngIf="error()" class="error">{{ error() }}</p>
+
+<section *ngIf="weather() as w" class="report">
+  <h2 class="ident">{{ w.icao }}</h2>
+
+  <dl class="readings">
+    <div class="row">
+      <dt>Temperature</dt>
+      <dd>{{ w.temperatureC | number: '1.0-0' }} &deg;C</dd>
+    </div>
+    <div class="row">
+      <dt>Wind</dt>
+      <dd>
+        {{ w.wind.speedKts | number: '1.0-0' }} kt from
+        {{ w.wind.directionDegrees | number: '3.0-0' }}&deg;
+      </dd>
+    </div>
+    <div class="row">
+      <dt>Visibility</dt>
+      <dd>
+        {{ w.visibility.distanceMeters | number: '1.0-0' }} m
+        <span class="alt">{{ w.visibility.distanceSm | number: '1.1-1' }} sm</span>
+      </dd>
+    </div>
+    <div class="row">
+      <dt>Pressure</dt>
+      <dd>
+        {{ w.pressureHpa | number: '1.0-0' }} hPa
+        <span class="alt">{{ w.pressureHg | number: '1.2-2' }} inHg</span>
+      </dd>
+    </div>
+  </dl>
+
+  <h3 class="section-title">Cloud layers</h3>
+  <ul class="layers" *ngIf="w.cloudLayers.length > 0">
+    <li class="layer" *ngFor="let layer of w.cloudLayers">
+      <span class="coverage">{{ layer.coverage }}</span>
+      <span class="altitude">{{ layer.altitudeFt | number: '1.0-0' }} ft</span>
+      <span class="ceiling" *ngIf="layer.ceiling">ceiling</span>
+    </li>
+  </ul>
+  <p class="empty" *ngIf="w.cloudLayers.length === 0">No cloud layers reported.</p>
+</section>

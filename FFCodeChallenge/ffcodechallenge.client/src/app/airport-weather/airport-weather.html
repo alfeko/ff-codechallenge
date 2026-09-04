@@ -58,4 +58,26 @@
     </li>
   </ul>
   <p class="empty" *ngIf="w.cloudLayers.length === 0">No cloud layers reported.</p>
+
+  <h3 class="section-title">Runways</h3>
+  <div class="runway" *ngFor="let runway of w.runways">
+    <p class="runway-name">
+      Runway <span class="designator">{{ runway.designator }}</span>
+      <span class="alt">heading {{ runway.headingDegrees | number: '3.0-0' }}&deg;</span>
+    </p>
+    <dl class="readings">
+      <div class="row">
+        <dt>{{ headwindLabel(runway) }}</dt>
+        <dd>{{ magnitude(runway.headwindKts) | number: '1.0-0' }} kt</dd>
+      </div>
+      <div class="row">
+        <dt>Crosswind</dt>
+        <dd>
+          {{ magnitude(runway.crosswindKts) | number: '1.0-0' }} kt
+          <span class="alt">{{ crosswindSide(runway) }}</span>
+        </dd>
+      </div>
+    </dl>
+  </div>
+  <p class="empty" *ngIf="w.runways.length === 0">No runway data available.</p>
 </section>

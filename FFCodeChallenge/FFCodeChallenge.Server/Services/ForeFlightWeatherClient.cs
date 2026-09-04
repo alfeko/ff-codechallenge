@@ -52,6 +52,12 @@ namespace FFCodeChallenge.Server.Services
 
         private static AirportWeatherDto MapToDto(string icao, ForeFlightConditions conditions)
         {
+            var wind = new WindDto
+            {
+                SpeedKts = conditions.Wind?.SpeedKts ?? 0,
+                DirectionDegrees = conditions.Wind?.Direction ?? 0
+            };
+
             return new AirportWeatherDto
             {
                 Icao = icao,
@@ -63,11 +69,8 @@ namespace FFCodeChallenge.Server.Services
                     DistanceSm = conditions.Visibility?.DistanceSm ?? 0,
                     DistanceMeters = conditions.Visibility?.DistanceMeter ?? 0
                 },
-                Wind = new WindDto
-                {
-                    SpeedKts = conditions.Wind?.SpeedKts ?? 0,
-                    DirectionDegrees = conditions.Wind?.Direction ?? 0
-                },
+                Wind = wind,
+                Runways = MapRunways(wind),
                 CloudLayers = conditions.CloudLayers.Select(layer => new CloudLayerDto
                 {
                     Coverage = layer.Coverage,
@@ -75,6 +78,25 @@ namespace FFCodeChallenge.Server.Services
                     Ceiling = layer.Ceiling
                 }).ToList()
             };
+        }
+
+        private static List<RunwayDto> MapRunways(WindDto wind)
+        {
+            return RunwayCatalog.AssumedRunways.Select(runway =>
+            {
+                var (headwindKts, crosswindKts) = RunwayWindCalculator.Calculate(
+                    wind.SpeedKts,
+                    wind.DirectionDegrees,
+                    runway.HeadingDegrees);
+
+                return new RunwayDto
+                {
+                    Designator = runway.Designator,
+                    HeadingDegrees = runway.HeadingDegrees,
+                    HeadwindKts = headwindKts,
+                    CrosswindKts = crosswindKts
+                };
+            }).ToList();
         }
     }
 }

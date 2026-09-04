@@ -17,6 +17,15 @@ export interface CloudLayerDto {
   ceiling: boolean;
 }
 
+export interface RunwayDto {
+  designator: string;
+  headingDegrees: number;
+  /** Positive = headwind, negative = tailwind. */
+  headwindKts: number;
+  /** Positive = wind from the pilot's right, negative = from the left. */
+  crosswindKts: number;
+}
+
 export interface AirportWeatherDto {
   icao: string;
   temperatureC: number;
@@ -24,6 +33,7 @@ export interface AirportWeatherDto {
   pressureHpa: number;
   visibility: VisibilityDto;
   wind: WindDto;
+  runways: RunwayDto[];
   cloudLayers: CloudLayerDto[];
 }
 
@@ -34,11 +44,38 @@ export interface AirportWeatherDto {
   templateUrl: './airport-weather.html',
 })
 export class AirportWeather {
+  /**
+   * The UI shows whole knots, so anything below half a knot renders as "0".
+   * Matching the threshold to the pipe's rounding keeps the number and the
+   * wording consistent, and stops floating-point residue (a direct tailwind
+   * yields a crosswind of ~1e-15) from being labelled "from the right".
+   */
+  private static readonly NEGLIGIBLE_KTS = 0.5;
+
   public icaoCode = '';
   public weather = signal<AirportWeatherDto | null>(null);
   public error = signal<string | null>(null);
 
   constructor(private http: HttpClient) {}
+
+  /** Absolute value for display; the sign is expressed in words instead. */
+  magnitude(value: number): number {
+    return Math.abs(value);
+  }
+
+  /** Row label: the sign decides whether this component helps or hurts. */
+  headwindLabel(runway: RunwayDto): string {
+    return runway.headwindKts < 0 ? 'Tailwind' : 'Headwind';
+  }
+
+  /** Muted qualifier after the crosswind value; empty when it rounds to zero. */
+  crosswindSide(runway: RunwayDto): string {
+    if (Math.abs(runway.crosswindKts) < AirportWeather.NEGLIGIBLE_KTS) {
+      return '';
+    }
+
+    return runway.crosswindKts > 0 ? 'from the right' : 'from the left';
+  }
 
   getWeather() {
     this.error.set(null);

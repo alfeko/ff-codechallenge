@@ -14,6 +14,8 @@ namespace FFCodeChallenge.Server.Models
 
         public WindDto Wind { get; set; } = new();
 
+        public List<RunwayDto> Runways { get; set; } = [];
+
         public List<CloudLayerDto> CloudLayers { get; set; } = [];
     }
 
@@ -29,6 +31,19 @@ namespace FFCodeChallenge.Server.Models
         public double SpeedKts { get; set; }
 
         public int DirectionDegrees { get; set; }
+    }
+
+    public class RunwayDto
+    {
+        public string Designator { get; set; } = string.Empty;
+
+        public int HeadingDegrees { get; set; }
+
+        /// <summary>Positive = headwind, negative = tailwind.</summary>
+        public double HeadwindKts { get; set; }
+
+        /// <summary>Positive = wind from the pilot's right, negative = from the left.</summary>
+        public double CrosswindKts { get; set; }
     }
 
     public class CloudLayerDto

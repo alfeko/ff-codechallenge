@@ -27,3 +27,26 @@
   font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
 }
+
+/* Warnings carry their text as well as their colour, so the meaning never depends on
+   colour alone. The rule is a left bar rather than a filled chip: at this weight an
+   amber background would need re-checking for contrast against white text. */
+.warnings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  margin: 0.6rem 0 0;
+}
+
+.warning {
+  padding-left: 0.5rem;
+  border-left: 2px solid var(--warn);
+  color: var(--warn);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.compact-line .warning {
+  font-family: var(--sans);
+  font-variant-numeric: normal;
+}

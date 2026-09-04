@@ -9,6 +9,7 @@ import { CloudLayers } from './cloud-layers/cloud-layers';
 import { CurrentConditions } from './current-conditions/current-conditions';
 import { Forecast } from './forecast/forecast';
 import { ForecastPeriod } from './forecast-period/forecast-period';
+import { ForecastTimeFilter } from './forecast-time-filter/forecast-time-filter';
 import { FullView } from './full-view/full-view';
 import { Landing } from './landing/landing';
 import { LoadState } from './load-state/load-state';
@@ -31,6 +32,7 @@ import { WeatherShell } from './weather-shell/weather-shell';
     CurrentConditions,
     Forecast,
     ForecastPeriod,
+    ForecastTimeFilter,
     CloudLayers,
     RunwayComponents,
     LoadState,

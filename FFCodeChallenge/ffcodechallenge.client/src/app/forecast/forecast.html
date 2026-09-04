@@ -5,10 +5,22 @@
 
 <p class="raw-taf" *ngIf="taf.text">{{ taf.text }}</p>
 
-<ol class="periods" *ngIf="taf.periods.length > 0">
-  <li *ngFor="let period of taf.periods">
+<app-forecast-time-filter
+  [validFrom]="taf.validFrom"
+  [validTo]="taf.validTo"
+  (timeChange)="onTimeChange($event)"
+></app-forecast-time-filter>
+
+<ol class="periods" *ngIf="visiblePeriods.length > 0">
+  <li *ngFor="let period of visiblePeriods">
     <app-forecast-period [period]="period"></app-forecast-period>
   </li>
 </ol>
 
 <p class="empty" *ngIf="taf.periods.length === 0">No forecast periods reported.</p>
+<p class="empty" *ngIf="taf.periods.length > 0 && outsideWindow">
+  That time is outside this forecast&rsquo;s validity window.
+</p>
+<p class="empty" *ngIf="taf.periods.length > 0 && !outsideWindow && visiblePeriods.length === 0">
+  Nothing forecast for that time.
+</p>

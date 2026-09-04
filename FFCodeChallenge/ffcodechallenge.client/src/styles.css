@@ -16,6 +16,9 @@
   --ifr: #b3261e;
   --lifr: #8a1a8a;
 
+  /* Operational warnings (tailwind, crosswind/headwind limits). 5.0:1 on white. */
+  --warn: #b45309;
+
   --sans: ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, 'Liberation Mono', monospace;
 }

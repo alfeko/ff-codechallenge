@@ -1,0 +1,29 @@
+.runway + .runway {
+  margin-top: 1.25rem;
+}
+
+.runway-name {
+  margin: 0.9rem 0 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.runway-name .designator {
+  font-family: var(--mono);
+  letter-spacing: 0.06em;
+}
+
+.runway-name .alt {
+  margin-left: 0.5rem;
+  font-weight: 400;
+}
+
+.compact-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 1rem;
+  margin: 0.35rem 0 0;
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}

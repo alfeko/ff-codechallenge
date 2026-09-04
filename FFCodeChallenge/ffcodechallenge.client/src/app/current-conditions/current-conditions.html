@@ -1,0 +1,33 @@
+<dl class="readings">
+  <div class="row">
+    <dt>Temperature</dt>
+    <dd>{{ metar.temperatureC | number: '1.0-0' }} &deg;C</dd>
+  </div>
+  <div class="row">
+    <dt>Wind</dt>
+    <dd>
+      {{ metar.wind.speedKts | number: '1.0-0' }} kt from
+      {{ metar.wind.directionDegrees | number: '3.0-0' }}&deg;
+    </dd>
+  </div>
+  <div class="row">
+    <dt>Visibility</dt>
+    <dd>
+      {{ metar.visibility.distanceMeters | number: '1.0-0' }} m
+      <span class="alt">{{ metar.visibility.distanceSm | number: '1.1-1' }} sm</span>
+    </dd>
+  </div>
+  <div class="row">
+    <dt>Pressure</dt>
+    <dd>
+      {{ metar.pressureHpa | number: '1.0-0' }} hPa
+      <span class="alt">{{ metar.pressureHg | number: '1.2-2' }} inHg</span>
+    </dd>
+  </div>
+</dl>
+
+<h3 class="section-title">Cloud layers</h3>
+<app-cloud-layers [layers]="metar.cloudLayers"></app-cloud-layers>
+
+<h3 class="section-title">Runways</h3>
+<app-runway-components [runways]="metar.runways"></app-runway-components>

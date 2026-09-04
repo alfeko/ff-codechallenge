@@ -1,0 +1,84 @@
+/* Spacing and separators between periods belong to the list that owns them --
+   see .periods in forecast.css. Each host sits alone inside its own <li>, so a
+   :first-of-type rule here would match every period, not the first. */
+:host {
+  display: block;
+}
+
+.period-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.6rem;
+  margin: 0;
+}
+
+.period-time {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.change {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.flight-rules {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fr-vfr {
+  color: var(--vfr);
+}
+
+.fr-mvfr {
+  color: var(--mvfr);
+}
+
+.fr-ifr {
+  color: var(--ifr);
+}
+
+.fr-lifr {
+  color: var(--lifr);
+}
+
+.period-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 1rem;
+  margin: 0.35rem 0 0;
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.period-line .absent {
+  color: var(--muted);
+}
+
+.period-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.85rem;
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* Raw TAF fragment for this group. Kept flat rather than reusing the tinted block
+   the whole-TAF string gets, which would repeat the panel on every period. */
+.period-raw {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+}

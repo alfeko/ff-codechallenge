@@ -1,0 +1,6 @@
+<div class="loading" role="status" *ngIf="pending as code">
+  <span class="spinner" aria-hidden="true"></span>
+  Fetching {{ code }}&hellip;
+</div>
+
+<p class="error" *ngIf="error">{{ error }}</p>

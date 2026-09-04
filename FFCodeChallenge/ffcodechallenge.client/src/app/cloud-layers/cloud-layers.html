@@ -1,0 +1,9 @@
+<ul class="layers" [class.compact]="compact" *ngIf="layers.length > 0">
+  <li class="layer" *ngFor="let layer of layers">
+    <span class="coverage">{{ layer.coverage }}</span>
+    <span class="altitude">{{ layer.altitudeFt | number: '1.0-0' }} ft</span>
+    <span class="coverage" *ngIf="layer.type">{{ layer.type }}</span>
+    <span class="ceiling" *ngIf="layer.ceiling">ceiling</span>
+  </li>
+</ul>
+<p class="empty" *ngIf="layers.length === 0 && !compact">No cloud layers reported.</p>

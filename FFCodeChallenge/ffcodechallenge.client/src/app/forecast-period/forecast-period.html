@@ -1,0 +1,28 @@
+<p class="period-head">
+  <span class="period-time">{{ range }}</span>
+  <span class="change">{{ changeLabel }}</span>
+  <span [ngClass]="flightRulesClass" *ngIf="period.flightRules">{{ period.flightRules }}</span>
+</p>
+
+<p class="period-line">
+  <span *ngIf="period.wind as wind">
+    {{ wind.speedKts | number: '1.0-0' }} kt from
+    {{ wind.directionDegrees | number: '3.0-0' }}&deg;
+  </span>
+  <span class="absent" *ngIf="!period.wind">No wind forecast</span>
+
+  <span *ngIf="period.visibility as vis">
+    {{ vis.distanceMeters | number: '1.0-0' }} m
+    <span class="alt">{{ vis.distanceSm | number: '1.1-1' }} sm</span>
+  </span>
+</p>
+
+<app-runway-components [runways]="period.runways" [compact]="true"></app-runway-components>
+
+<p class="period-secondary" *ngIf="period.weather.length > 0">
+  <span *ngFor="let item of period.weather">{{ item }}</span>
+</p>
+
+<app-cloud-layers [layers]="period.cloudLayers" [compact]="true"></app-cloud-layers>
+
+<p class="period-raw" *ngIf="period.text">{{ period.text }}</p>

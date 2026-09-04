@@ -1,8 +1,9 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { App } from './app';
-import { AirportWeather } from './airport-weather/airport-weather';
+import { AirportSearch } from './airport-search/airport-search';
 
 describe('App', () => {
   let component: App;
@@ -10,8 +11,9 @@ describe('App', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [App, AirportWeather],
-      imports: [HttpClientTestingModule, FormsModule]
+      declarations: [App, AirportSearch],
+      // The shell renders <router-outlet>, so the router has to be configured.
+      imports: [HttpClientTestingModule, FormsModule, RouterModule.forRoot([])],
     }).compileComponents();
   });
 

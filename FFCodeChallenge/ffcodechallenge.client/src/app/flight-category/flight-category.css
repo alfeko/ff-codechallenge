@@ -1,0 +1,47 @@
+:host {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+}
+
+/* Filled rather than tinted text: this is the headline verdict and should carry more
+   weight than the individual warnings. The word is always present, so the colour is
+   reinforcement rather than the only signal. */
+.badge {
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: var(--muted);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+/* All three pass 4.5:1 for white text on the fill. */
+.cat-go {
+  background: var(--vfr);
+}
+
+.cat-maybe {
+  background: var(--warn);
+}
+
+.cat-no-go {
+  background: var(--alert);
+}
+
+.badge.compact {
+  padding: 0.05rem 0.4rem;
+  font-size: 0.75rem;
+}
+
+.reasons {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}

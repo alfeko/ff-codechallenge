@@ -7,6 +7,7 @@ import { App } from './app';
 import { AirportSearch } from './airport-search/airport-search';
 import { CloudLayers } from './cloud-layers/cloud-layers';
 import { CurrentConditions } from './current-conditions/current-conditions';
+import { FlightCategory } from './flight-category/flight-category';
 import { Forecast } from './forecast/forecast';
 import { ForecastPeriod } from './forecast-period/forecast-period';
 import { ForecastTimeFilter } from './forecast-time-filter/forecast-time-filter';
@@ -30,6 +31,7 @@ import { WeatherShell } from './weather-shell/weather-shell';
     MetarView,
     TafView,
     CurrentConditions,
+    FlightCategory,
     Forecast,
     ForecastPeriod,
     ForecastTimeFilter,

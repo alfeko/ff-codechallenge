@@ -25,6 +25,14 @@ export interface RunwayDto {
   crosswindKts: number;
 }
 
+/** Output of the backend flight category rule engine. */
+export interface FlightCategoryDto {
+  /** 'go' | 'maybe' | 'no-go'. */
+  category: string;
+  /** Why, limited to the rules that drove the outcome. Empty when go. */
+  reasons: string[];
+}
+
 export interface ForecastPeriodDto {
   /** Raw TAF fragment for this group. */
   text: string | null;
@@ -39,6 +47,7 @@ export interface ForecastPeriodDto {
   runways: RunwayDto[];
   cloudLayers: CloudLayerDto[];
   weather: string[];
+  category: FlightCategoryDto;
 }
 
 /** Current observed conditions. Served both standalone and inside AirportWeatherDto. */
@@ -51,6 +60,7 @@ export interface MetarDto {
   wind: WindDto;
   runways: RunwayDto[];
   cloudLayers: CloudLayerDto[];
+  category: FlightCategoryDto;
 }
 
 /** The forecast. Served both standalone and inside AirportWeatherDto. */

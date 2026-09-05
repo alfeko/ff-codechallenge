@@ -1,6 +1,7 @@
 <p class="period-head">
   <span class="period-time">{{ range }}</span>
   <span class="change">{{ changeLabel }}</span>
+  <app-flight-category [category]="period.category" [compact]="true"></app-flight-category>
   <span [ngClass]="flightRulesClass" *ngIf="period.flightRules">{{ period.flightRules }}</span>
 </p>
 

@@ -1,0 +1,5 @@
+<span [ngClass]="badgeClass" [class.compact]="compact">{{ label }}</span>
+
+<ul class="reasons" *ngIf="!compact && category.reasons.length > 0">
+  <li *ngFor="let reason of category.reasons">{{ reason }}</li>
+</ul>

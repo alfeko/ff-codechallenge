@@ -1,6 +1,7 @@
 using FFCodeChallenge.Server;
 using FFCodeChallenge.Server.Models;
 using FFCodeChallenge.Server.Services;
+using FFCodeChallenge.Server.Services.Rules;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// The flight category rule engine. Adding a condition means writing one rule and
+// registering it here; the engine takes the most severe verdict across all of them.
+builder.Services.AddSingleton<IFlightCategoryRule, LowCeilingRule>();
+builder.Services.AddSingleton<IFlightCategoryRule, LowVisibilityRule>();
+builder.Services.AddSingleton<IFlightCategoryRule, MarginalCeilingRule>();
+builder.Services.AddSingleton<IFlightCategoryRule, MarginalVisibilityRule>();
+builder.Services.AddSingleton<FlightCategoryEngine>();
 
 builder.Services.Configure<ForeFlightOptions>(builder.Configuration.GetSection("ForeFlight"));
 builder.Services.AddHttpClient<IForeFlightWeatherClient, ForeFlightWeatherClient>((sp, client) =>

@@ -36,6 +36,9 @@ namespace FFCodeChallenge.Server.Models
         public List<RunwayDto> Runways { get; set; } = [];
 
         public List<CloudLayerDto> CloudLayers { get; set; } = [];
+
+        /// <summary>Go / Maybe / NO-GO assessment of these conditions.</summary>
+        public FlightCategoryDto Category { get; set; } = new();
     }
 
     /// <summary>
@@ -85,6 +88,22 @@ namespace FFCodeChallenge.Server.Models
 
         /// <summary>Plain-English phrases, rendered as-is.</summary>
         public List<string> Weather { get; set; } = [];
+
+        /// <summary>Go / Maybe / NO-GO assessment of this period's conditions.</summary>
+        public FlightCategoryDto Category { get; set; } = new();
+    }
+
+    /// <summary>
+    /// Output of the flight category rule engine. <see cref="Category"/> is a string
+    /// rather than an enum so the JSON reads "no-go" without serializer configuration.
+    /// </summary>
+    public class FlightCategoryDto
+    {
+        /// <summary>"go" | "maybe" | "no-go".</summary>
+        public string Category { get; set; } = "go";
+
+        /// <summary>Why, limited to the rules that drove the outcome. Empty when Go.</summary>
+        public List<string> Reasons { get; set; } = [];
     }
 
     public class VisibilityDto

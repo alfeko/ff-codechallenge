@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using FFCodeChallenge.Server.Models;
 using FFCodeChallenge.Server.Models.ForeFlight;
+using FFCodeChallenge.Server.Services.Rules;
 
 namespace FFCodeChallenge.Server.Services
 {
@@ -27,10 +28,12 @@ namespace FFCodeChallenge.Server.Services
         };
 
         private readonly HttpClient _httpClient;
+        private readonly FlightCategoryEngine _categoryEngine;
 
-        public ForeFlightWeatherClient(HttpClient httpClient)
+        public ForeFlightWeatherClient(HttpClient httpClient, FlightCategoryEngine categoryEngine)
         {
             _httpClient = httpClient;
+            _categoryEngine = categoryEngine;
         }
 
         public async Task<AirportWeatherDto?> GetWeatherAsync(string icao, CancellationToken cancellationToken)
@@ -65,11 +68,13 @@ namespace FFCodeChallenge.Server.Services
             };
         }
 
-        private static MetarDto MapMetar(string icao, ForeFlightConditions conditions)
+        private MetarDto MapMetar(string icao, ForeFlightConditions conditions)
         {
             // Current conditions have always exposed a non-null wind and visibility, so keep
             // coalescing to defaults here even though the shared mappers can return null.
             var wind = MapWind(conditions.Wind) ?? new WindDto();
+            var visibility = MapVisibility(conditions.Visibility) ?? new VisibilityDto();
+            var cloudLayers = MapCloudLayers(conditions.CloudLayers);
 
             return new MetarDto
             {
@@ -77,14 +82,15 @@ namespace FFCodeChallenge.Server.Services
                 TemperatureC = conditions.TempC,
                 PressureHg = conditions.PressureHg,
                 PressureHpa = conditions.PressureHpa,
-                Visibility = MapVisibility(conditions.Visibility) ?? new VisibilityDto(),
+                Visibility = visibility,
                 Wind = wind,
                 Runways = MapRunways(wind),
-                CloudLayers = MapCloudLayers(conditions.CloudLayers)
+                CloudLayers = cloudLayers,
+                Category = _categoryEngine.Assess(visibility, cloudLayers)
             };
         }
 
-        private static TafDto? MapTaf(string icao, ForeFlightForecast? forecast)
+        private TafDto? MapTaf(string icao, ForeFlightForecast? forecast)
         {
             if (forecast is null)
             {
@@ -106,9 +112,11 @@ namespace FFCodeChallenge.Server.Services
             };
         }
 
-        private static ForecastPeriodDto MapForecastPeriod(ForeFlightForecastConditions period)
+        private ForecastPeriodDto MapForecastPeriod(ForeFlightForecastConditions period)
         {
             var wind = MapWind(period.Wind);
+            var visibility = MapVisibility(period.Visibility);
+            var cloudLayers = MapCloudLayers(period.CloudLayers);
 
             return new ForecastPeriodDto
             {
@@ -117,11 +125,12 @@ namespace FFCodeChallenge.Server.Services
                 FlightRules = period.FlightRules,
                 PeriodStart = ForeFlightTimestamp.Parse(period.Period?.DateStart),
                 PeriodEnd = ForeFlightTimestamp.Parse(period.Period?.DateEnd),
-                Visibility = MapVisibility(period.Visibility),
+                Visibility = visibility,
                 Wind = wind,
                 Runways = wind is null ? [] : MapRunways(wind),
-                CloudLayers = MapCloudLayers(period.CloudLayers),
-                Weather = [.. period.Weather]
+                CloudLayers = cloudLayers,
+                Weather = [.. period.Weather],
+                Category = _categoryEngine.Assess(visibility, cloudLayers)
             };
         }
 
